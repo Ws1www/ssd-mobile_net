@@ -101,7 +101,7 @@ def main(parser_data):
     # learning rate scheduler
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                    step_size=5,
-                                                   gamma=0.3)
+                                                   gamma=0.8)
 
     # 如果指定了上次训练保存的权重文件地址，则接着上次结果接着训练
     if parser_data.resume != "":
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     # 检测的目标类别个数，不包括背景
     parser.add_argument('--num_classes', default=20, type=int, help='num_classes')
     # 训练数据集的根目录(VOCdevkit)
-    parser.add_argument('--data-path', default='/kaggle/input/yg1234', help='dataset')
+    parser.add_argument('--data-path', default='/kaggle/input/yg1234/yg', help='dataset')
     # 文件保存地址
     parser.add_argument('--output-dir', default='/kaggle/working/save_weights', help='path where to save')
     # 若需要接着上次训练，则指定上次训练保存权重文件地址
