@@ -197,11 +197,3 @@ if __name__ == '__main__':
         os.makedirs(args.output_dir)
 
     main(args)
-Footer
-© 2023 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Docs
