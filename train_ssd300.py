@@ -16,45 +16,25 @@ def create_model(num_classes=21):
     backbone = Backbone()
     model = SSD300(backbone=backbone, num_classes=num_classes)
 
-    # https://ngc.nvidia.com/catalog/models -> search ssd -> download FP32
-    pre_ssd_path = "src/mobilenet_v3_large.pth"
-    if os.path.exists(pre_ssd_path) is False:
-        raise FileNotFoundError("nvidia_ssdpyt_fp32.pt not find in {}".format(pre_ssd_path))
-    pre_model_dict = torch.load(pre_ssd_path, map_location='cpu')
-    pre_weights_dict = pre_model_dict
+#     # https://ngc.nvidia.com/catalog/models -> search ssd -> download FP32
+#     pre_ssd_path = "/kaggle/input/pretrained/nvidia_ssdpyt_fp32_190826.pt"
+#     if os.path.exists(pre_ssd_path) is False:
+#         raise FileNotFoundError("nvidia_ssdpyt_fp32.pt not find in {}".format(pre_ssd_path))
+#     pre_model_dict = torch.load(pre_ssd_path, map_location='cpu')
+#     pre_weights_dict = pre_model_dict["model"]
 
-    # 删除类别预测器权重，注意，回归预测器的权重可以重用，因为不涉及num_classes
-    del_conf_loc_dict = {}
-    for k, v in pre_weights_dict.items():
-        split_key = k.split(".")
-        if "avgpool" in split_key or "classifier" in split_key:
-            continue
-        del_conf_loc_dict.update({k: v})
+#     # 删除类别预测器权重，注意，回归预测器的权重可以重用，因为不涉及num_classes
+#     del_conf_loc_dict = {}
+#     for k, v in pre_weights_dict.items():
+#         split_key = k.split(".")
+#         if "conf" in split_key:
+#             continue
+#         del_conf_loc_dict.update({k: v})
 
-    missing_keys, unexpected_keys = model.load_state_dict(del_conf_loc_dict, strict=False)
-    if len(missing_keys) != 0 or len(unexpected_keys) != 0:
-        print("missing_keys: ", missing_keys)
-        print("unexpected_keys: ", unexpected_keys)
-
-    # pre_ssd_path = "src/nvidia_ssdpyt_fp32_190826.pt"
-    # if os.path.exists(pre_ssd_path) is False:
-    #     raise FileNotFoundError("nvidia_ssdpyt_fp32.pt not find in {}".format(pre_ssd_path))
-    # pre_model_dict = torch.load(pre_ssd_path, map_location='cpu')
-    # pre_weights_dict = pre_model_dict['model']
-    #
-    # # 删除类别预测器权重，注意，回归预测器的权重可以重用，因为不涉及num_classes
-    # del_conf_loc_dict = {}
-    # for k, v in pre_weights_dict.items():
-    #     split_key = k.split(".")
-    #     if "conf" in split_key or "additional_blocks.0" in split_key:
-    #         continue
-    #     del_conf_loc_dict.update({k: v})
-    #
-    # missing_keys, unexpected_keys = model.load_state_dict(del_conf_loc_dict, strict=False)
-    # if len(missing_keys) != 0 or len(unexpected_keys) != 0:
-    #     print("missing_keys: ", missing_keys)
-    #     print("unexpected_keys: ", unexpected_keys)
-
+#     missing_keys, unexpected_keys = model.load_state_dict(del_conf_loc_dict, strict=False)
+#     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
+#         print("missing_keys: ", missing_keys)
+#         print("unexpected_keys: ", unexpected_keys)
 
     return model
 
@@ -93,8 +73,8 @@ def main(parser_data):
     assert batch_size > 1, "batch size must be greater than 1"
     # 防止最后一个batch_size=1，如果最后一个batch_size=1就舍去
     drop_last = True if len(train_dataset) % batch_size == 1 else False
-    # nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
-    nw = 0
+    nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
+#     nw = 0
     print('Using %g dataloader workers' % nw)
     train_data_loader = torch.utils.data.DataLoader(train_dataset,
                                                     batch_size=batch_size,
@@ -195,15 +175,15 @@ if __name__ == '__main__':
     # 检测的目标类别个数，不包括背景
     parser.add_argument('--num_classes', default=20, type=int, help='num_classes')
     # 训练数据集的根目录(VOCdevkit)
-    parser.add_argument('--data-path', default=r'C:\Users\25360\Desktop\ssd\yg', help='dataset')
+    parser.add_argument('--data-path', default='/kaggle/input/yg/', help='dataset')
     # 文件保存地址
-    parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
+    parser.add_argument('--output-dir', default='/kaggle/working/save_weights', help='path where to save')
     # 若需要接着上次训练，则指定上次训练保存权重文件地址
     parser.add_argument('--resume', default='', type=str, help='resume from checkpoint')
     # 指定接着从哪个epoch数开始训练
     parser.add_argument('--start_epoch', default=0, type=int, help='start epoch')
     # 训练的总epoch数
-    parser.add_argument('--epochs', default=2, type=int, metavar='N',
+    parser.add_argument('--epochs', default=15, type=int, metavar='N',
                         help='number of total epochs to run')
     # 训练的batch size
     parser.add_argument('--batch_size', default=4, type=int, metavar='N',
@@ -217,3 +197,11 @@ if __name__ == '__main__':
         os.makedirs(args.output_dir)
 
     main(args)
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
