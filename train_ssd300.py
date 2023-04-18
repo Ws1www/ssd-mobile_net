@@ -17,24 +17,24 @@ def create_model(num_classes=21):
     model = SSD300(backbone=backbone, num_classes=num_classes)
 
 #     # https://ngc.nvidia.com/catalog/models -> search ssd -> download FP32
-#     pre_ssd_path = "/kaggle/input/pretrained/nvidia_ssdpyt_fp32_190826.pt"
-#     if os.path.exists(pre_ssd_path) is False:
-#         raise FileNotFoundError("nvidia_ssdpyt_fp32.pt not find in {}".format(pre_ssd_path))
-#     pre_model_dict = torch.load(pre_ssd_path, map_location='cpu')
-#     pre_weights_dict = pre_model_dict["model"]
+pre_ssd_path = "nvidia_ssdpyt_fp32_190826.pt"
+if os.path.exists(pre_ssd_path) is False:
+    raise FileNotFoundError("nvidia_ssdpyt_fp32.pt not find in {}".format(pre_ssd_path))
+pre_model_dict = torch.load(pre_ssd_path, map_location='cpu')
+pre_weights_dict = pre_model_dict["model"]
 
 #     # 删除类别预测器权重，注意，回归预测器的权重可以重用，因为不涉及num_classes
-#     del_conf_loc_dict = {}
-#     for k, v in pre_weights_dict.items():
-#         split_key = k.split(".")
-#         if "conf" in split_key:
-#             continue
-#         del_conf_loc_dict.update({k: v})
+del_conf_loc_dict = {}
+for k, v in pre_weights_dict.items():
+    split_key = k.split(".")
+    if "conf" in split_key:
+        continue
+    del_conf_loc_dict.update({k: v})
 
-#     missing_keys, unexpected_keys = model.load_state_dict(del_conf_loc_dict, strict=False)
-#     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
-#         print("missing_keys: ", missing_keys)
-#         print("unexpected_keys: ", unexpected_keys)
+missing_keys, unexpected_keys = model.load_state_dict(del_conf_loc_dict, strict=False)
+if len(missing_keys) != 0 or len(unexpected_keys) != 0:
+    print("missing_keys: ", missing_keys)
+    print("unexpected_keys: ", unexpected_keys)
 
     return model
 
